@@ -6,5 +6,4 @@ This is the **starter project** for the **Java Spring RESTful APIs - Xây Dựng
 
 ## 📖 How to Use This Project?
 
-===
 Môi trường chạy dự án: Java 17
