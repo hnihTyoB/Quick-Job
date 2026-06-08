@@ -2,6 +2,8 @@ package vn.thinher.quickjob.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,27 +25,31 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.handleFetchAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.handleFetchAllUsers());
     }
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable("id") long id) {
-        return userService.handleFetchUserById(id);
+    public ResponseEntity<User> getUser(@PathVariable("id") long id) {
+        User user = userService.handleFetchUserById(id);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/users")
-    public String createNewUser(@RequestBody User user) {
-        userService.handleCreateUser(user);
-        return "User created successfully";
-        }
+    public ResponseEntity<User> createNewUser(@RequestBody User user) {
+        User createdUser = userService.handleCreateUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
     @PutMapping("/users")
-    public User updateUser(@RequestBody User user) {
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
         User existingUser = userService.handleUpdateUser(user);
-        return existingUser;
+        return ResponseEntity.ok(existingUser);
     }
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
         userService.handleDeleteUser(id);
-        return "User deleted successfully";
+        return ResponseEntity.ok("User deleted successfully");
     }
 }
