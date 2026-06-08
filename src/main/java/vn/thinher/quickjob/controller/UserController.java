@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.thinher.quickjob.domain.User;
 import vn.thinher.quickjob.service.UserService;
+import vn.thinher.quickjob.service.error.IdInvalidException;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,7 +50,10 @@ public class UserController {
         return ResponseEntity.ok(existingUser);
     }
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
+        if (id >= 1500) {
+            throw new IdInvalidException("Id must be less than 1500");
+        }
         userService.handleDeleteUser(id);
         return ResponseEntity.ok("User deleted successfully");
     }
