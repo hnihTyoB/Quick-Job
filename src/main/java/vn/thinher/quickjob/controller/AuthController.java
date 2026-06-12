@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.thinher.quickjob.domain.dto.LoginDTO;
+import vn.thinher.quickjob.domain.dto.ResLoginDTO;
 import vn.thinher.quickjob.util.SecurityUtil;
 
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,16 @@ public class AuthController {
         this.securityUtil = securityUtil;
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
         //xác thực người dùng => cần viết hàm loadUserByUsername 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken); 
         //create token
-        this.securityUtil.createToken(authentication);
-        return ResponseEntity.ok().body(loginDTO);
+        String accessToken = this.securityUtil.createToken(authentication);
+        ResLoginDTO resLoginDTO = new ResLoginDTO();
+        resLoginDTO.setAccessToken(accessToken);
+
+        return ResponseEntity.ok().body(resLoginDTO);
     }
     
 }
