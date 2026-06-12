@@ -27,6 +27,14 @@ public class UserService {
         return null;
     }
 
+    public User handleFetchUserByEmail(String email) {
+        Optional<User> userOptional = Optional.ofNullable(this.userRepository.findByEmail(email));
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        }
+        return null;
+    }
+
     public User handleCreateUser(User user) {
         return this.userRepository.save(user);
     }
