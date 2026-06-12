@@ -2,7 +2,9 @@ package vn.thinher.quickjob.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import vn.thinher.quickjob.domain.dto.LoginDTO;
+import vn.thinher.quickjob.util.SecurityUtil;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,17 +18,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder) {
+    private final SecurityUtil securityUtil;
+
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.securityUtil = securityUtil;
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginDTO> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<LoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
         //xác thực người dùng => cần viết hàm loadUserByUsername 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken); 
-        //nạp thông tin (nếu xử lý thành công) vào SecurityContext 
-        SecurityContextHolder.getContext().setAuthentication(authentication); 
-        
+        //create token
+        this.securityUtil.createToken(authentication);
         return ResponseEntity.ok().body(loginDTO);
     }
     

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.thinher.quickjob.domain.User;
 import vn.thinher.quickjob.service.UserService;
-import vn.thinher.quickjob.service.error.IdInvalidException;
+import vn.thinher.quickjob.util.error.IdInvalidException;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;

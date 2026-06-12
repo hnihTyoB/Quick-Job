@@ -1,4 +1,4 @@
-package vn.thinher.quickjob.service.error;
+package vn.thinher.quickjob.util.error;
 
 public class IdInvalidException extends Exception {
     public IdInvalidException(String message) {
