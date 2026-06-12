@@ -19,28 +19,28 @@ import vn.thinher.quickjob.domain.RestResponse;
 @RestControllerAdvice
 public class GlobalException {
     @ExceptionHandler(value = {
-        IdInvalidException.class,
-        UsernameNotFoundException.class,
-        BadCredentialsException.class
-    }) 
-    public ResponseEntity<RestResponse<Object>> handleException(Exception exception) { 
+            UsernameNotFoundException.class,
+            BadCredentialsException.class
+    })
+    public ResponseEntity<RestResponse<Object>> handleException(Exception exception) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         restResponse.setError(exception.getMessage());
-        restResponse.setMessage("Error occurred.");
+        restResponse.setMessage("Exception occurred.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
-    } 
-    @ExceptionHandler(MethodArgumentNotValidException.class) 
-    public ResponseEntity<RestResponse<Object>> validateError(MethodArgumentNotValidException ex) { 
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<RestResponse<Object>> validateError(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         final List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        
+
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         restResponse.setError(ex.getBody().getDetail());
 
         List<String> errorMessages = fieldErrors.stream()
-            .map(f ->  f.getDefaultMessage()).collect(Collectors.toList());
+                .map(f -> f.getDefaultMessage()).collect(Collectors.toList());
         restResponse.setMessage(errorMessages.size() > 1 ? errorMessages : errorMessages.get(0));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
     }

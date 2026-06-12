@@ -33,6 +33,8 @@ public class AuthController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         // create token
         String accessToken = this.securityUtil.createToken(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         ResLoginDTO resLoginDTO = new ResLoginDTO();
         resLoginDTO.setAccessToken(accessToken);
 
