@@ -1,6 +1,7 @@
 package vn.thinher.quickjob.config;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -34,8 +35,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+
+        String errorMessage = Optional.ofNullable(authException.getCause()).map(Throwable::getMessage)
+                .orElse(authException.getMessage());
+        restResponse.setError(errorMessage);
+
         restResponse.setMessage("Token không hợp lệ hoặc đã hết hạn.");
-        restResponse.setError(authException.getCause().getMessage());
         mapper.writeValue(response.getWriter(), restResponse);
     }
 
