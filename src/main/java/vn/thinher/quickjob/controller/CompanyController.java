@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import vn.thinher.quickjob.domain.Company;
 import vn.thinher.quickjob.service.CompanyService;
 
@@ -23,8 +24,8 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
-    public ResponseEntity<Company> createNewCompany(@RequestBody Company company) {
-        Company createdCompany = companyService.handleCreateCompany(company);
+    public ResponseEntity<Company> createNewCompany(@Valid @RequestBody Company company) {
+        Company createdCompany = this.companyService.handleCreateCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCompany);
     }
 
