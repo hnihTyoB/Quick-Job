@@ -1,5 +1,7 @@
 package vn.thinher.quickjob.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,4 +31,21 @@ public class CompanyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCompany);
     }
 
+    @GetMapping("/companies")
+    public ResponseEntity<List<Company>> getAllCompanies() {
+        List<Company> companies = this.companyService.handleFetchAllCompanies();
+        return ResponseEntity.ok(companies);
+    }
+
+    @PutMapping("/companies")
+    public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company company) {
+        Company updatedCompany = this.companyService.handleUpdateCompany(company);
+        return ResponseEntity.ok(updatedCompany);
+    }
+
+    @DeleteMapping("/companies/{id}")
+    public ResponseEntity<String> deleteCompany(@PathVariable("id") long id) {
+        this.companyService.handleDeleteCompany(id);
+        return ResponseEntity.ok("Company deleted successfully");
+    }
 }
