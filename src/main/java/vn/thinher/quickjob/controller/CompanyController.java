@@ -40,12 +40,15 @@ public class CompanyController {
     @PutMapping("/companies")
     public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company company) {
         Company updatedCompany = this.companyService.handleUpdateCompany(company);
+        if (updatedCompany == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(updatedCompany);
     }
 
     @DeleteMapping("/companies/{id}")
-    public ResponseEntity<String> deleteCompany(@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) {
         this.companyService.handleDeleteCompany(id);
-        return ResponseEntity.ok("Company deleted successfully");
+        return ResponseEntity.ok(null);
     }
 }

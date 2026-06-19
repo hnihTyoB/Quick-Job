@@ -32,9 +32,8 @@ public class CompanyService {
             existingCompany.setAddress(company.getAddress());
             existingCompany.setLogo(company.getLogo());
             return this.companyRepository.save(existingCompany);
-        } else {
-            throw new RuntimeException("Company not found with id: " + company.getId());
         }
+        return null;
     }
 
     public void handleDeleteCompany(long id) {
