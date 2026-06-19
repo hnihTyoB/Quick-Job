@@ -3,8 +3,12 @@ package vn.thinher.quickjob.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.thinher.quickjob.domain.Company;
+import vn.thinher.quickjob.domain.dto.Meta;
+import vn.thinher.quickjob.domain.dto.ResultPaginationDTO;
 import vn.thinher.quickjob.repository.CompanyRepository;
 
 @Service
@@ -19,8 +23,17 @@ public class CompanyService {
         return this.companyRepository.save(company);
     }
 
-    public List<Company> handleFetchAllCompanies() {
-        return this.companyRepository.findAll();
+    public ResultPaginationDTO handleFetchAllCompanies(Pageable pageable) {
+        Page<Company> companyPage = this.companyRepository.findAll(pageable);
+        Meta meta = new Meta();
+        meta.setPage(companyPage.getNumber() + 1);
+        meta.setPageSize(companyPage.getSize());
+        meta.setPages(companyPage.getTotalPages());
+        meta.setTotal(companyPage.getTotalElements());
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        result.setMeta(meta);
+        result.setResult(companyPage.getContent());
+        return result;
     }
 
     public Company handleUpdateCompany(Company company) {
