@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.thinher.quickjob.domain.Company;
 import vn.thinher.quickjob.domain.dto.Meta;
@@ -23,16 +24,16 @@ public class CompanyService {
         return this.companyRepository.save(company);
     }
 
-    public ResultPaginationDTO handleFetchAllCompanies(Pageable pageable) {
-        Page<Company> companyPage = this.companyRepository.findAll(pageable);
+    public ResultPaginationDTO handleFetchAllCompanies(Specification<Company> pageable) {
+        List<Company> companyPage = this.companyRepository.findAll(pageable);
         Meta meta = new Meta();
-        meta.setPage(companyPage.getNumber() + 1);
-        meta.setPageSize(companyPage.getSize());
-        meta.setPages(companyPage.getTotalPages());
-        meta.setTotal(companyPage.getTotalElements());
+        // meta.setPage(companyPage.getNumber() + 1);
+        // meta.setPageSize(companyPage.getSize());
+        // meta.setPages(companyPage.getTotalPages());
+        // meta.setTotal(companyPage.getTotalElements());
         ResultPaginationDTO result = new ResultPaginationDTO();
         result.setMeta(meta);
-        result.setResult(companyPage.getContent());
+        result.setResult(companyPage);
         return result;
     }
 
