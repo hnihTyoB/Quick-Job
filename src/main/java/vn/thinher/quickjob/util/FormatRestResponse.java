@@ -10,36 +10,39 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import jakarta.servlet.http.HttpServletResponse;
 import vn.thinher.quickjob.domain.RestResponse;
+import vn.thinher.quickjob.util.annotation.ApiMessage;
 
 // Format rest response sẽ chạy trước GlobalException, nên nó trả về mã lỗi 500 thay vì 400, vì vậy viết thêm RestResponse trong GlobalException.
 @ControllerAdvice
-public class FormatRestResponse implements ResponseBodyAdvice<Object> { 
- 
-    @Override 
-    public boolean supports(MethodParameter returnType, Class converterType) { 
-        return true; 
-    } 
- 
-    @Override 
-    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {  
+public class FormatRestResponse implements ResponseBodyAdvice<Object> {
+
+    @Override
+    public boolean supports(MethodParameter returnType, Class converterType) {
+        return true;
+    }
+
+    @Override
+    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
+            Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
         HttpServletResponse httpResponse = ((ServletServerHttpResponse) response).getServletResponse();
         int status = httpResponse.getStatus();
 
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(status);
 
-        if (body instanceof String) { 
+        if (body instanceof String) {
             return body;
         }
 
-        if (status >= 400) { 
-            //case error 
+        if (status >= 400) {
+            // case error
             return body;
-        } else { 
-            //case success 
+        } else {
+            // case success
             restResponse.setData(body);
-            restResponse.setMessage("Success");
-        } 
+            ApiMessage apiMessage = returnType.getMethodAnnotation(ApiMessage.class);
+            restResponse.setMessage(apiMessage != null ? apiMessage.value() : "Call API successfully");
+        }
         return restResponse;
-    } 
-} 
+    }
+}

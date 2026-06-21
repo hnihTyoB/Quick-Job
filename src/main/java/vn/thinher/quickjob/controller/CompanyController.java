@@ -23,6 +23,7 @@ import jakarta.validation.Valid;
 import vn.thinher.quickjob.domain.Company;
 import vn.thinher.quickjob.domain.dto.ResultPaginationDTO;
 import vn.thinher.quickjob.service.CompanyService;
+import vn.thinher.quickjob.util.annotation.ApiMessage;
 
 @RestController
 public class CompanyController {
@@ -40,6 +41,7 @@ public class CompanyController {
     }
 
     @GetMapping("/companies")
+    @ApiMessage("Fetch all companies")
     public ResponseEntity<ResultPaginationDTO> getAllCompanies(
             @Filter Specification<Company> specification,
             Pageable pageable) {

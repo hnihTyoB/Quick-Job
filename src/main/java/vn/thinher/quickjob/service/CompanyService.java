@@ -27,8 +27,8 @@ public class CompanyService {
     public ResultPaginationDTO handleFetchAllCompanies(Specification<Company> specification, Pageable pageable) {
         Page<Company> companyPage = this.companyRepository.findAll(specification, pageable);
         Meta meta = new Meta();
-        meta.setPage(companyPage.getNumber() + 1);
-        meta.setPageSize(companyPage.getSize());
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
         meta.setPages(companyPage.getTotalPages());
         meta.setTotal(companyPage.getTotalElements());
         ResultPaginationDTO result = new ResultPaginationDTO();
