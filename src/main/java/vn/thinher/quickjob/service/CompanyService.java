@@ -24,16 +24,16 @@ public class CompanyService {
         return this.companyRepository.save(company);
     }
 
-    public ResultPaginationDTO handleFetchAllCompanies(Specification<Company> pageable) {
-        List<Company> companyPage = this.companyRepository.findAll(pageable);
+    public ResultPaginationDTO handleFetchAllCompanies(Specification<Company> specification, Pageable pageable) {
+        Page<Company> companyPage = this.companyRepository.findAll(specification, pageable);
         Meta meta = new Meta();
-        // meta.setPage(companyPage.getNumber() + 1);
-        // meta.setPageSize(companyPage.getSize());
-        // meta.setPages(companyPage.getTotalPages());
-        // meta.setTotal(companyPage.getTotalElements());
+        meta.setPage(companyPage.getNumber() + 1);
+        meta.setPageSize(companyPage.getSize());
+        meta.setPages(companyPage.getTotalPages());
+        meta.setTotal(companyPage.getTotalElements());
         ResultPaginationDTO result = new ResultPaginationDTO();
         result.setMeta(meta);
-        result.setResult(companyPage);
+        result.setResult(companyPage.getContent());
         return result;
     }
 

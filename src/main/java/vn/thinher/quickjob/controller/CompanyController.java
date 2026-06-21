@@ -41,17 +41,9 @@ public class CompanyController {
 
     @GetMapping("/companies")
     public ResponseEntity<ResultPaginationDTO> getAllCompanies(
-            @Filter Specification<Company> specification
-    // @RequestParam("current") Optional<String> currentOptional,
-    // @RequestParam("pageSize") Optional<String> pageSizeOptional
-    ) {
-        // String sCurrent = currentOptional.isPresent() ? currentOptional.get() : "";
-        // String sPageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() :
-        // "";
-        // int current = Integer.parseInt(sCurrent);
-        // int pageSize = Integer.parseInt(sPageSize);
-        // Pageable pageable = PageRequest.of(current - 1, pageSize);
-        ResultPaginationDTO result = this.companyService.handleFetchAllCompanies(specification);
+            @Filter Specification<Company> specification,
+            Pageable pageable) {
+        ResultPaginationDTO result = this.companyService.handleFetchAllCompanies(specification, pageable);
         return ResponseEntity.ok(result);
     }
 
