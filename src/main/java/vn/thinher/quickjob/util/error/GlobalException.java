@@ -13,6 +13,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import vn.thinher.quickjob.domain.RestResponse;
 
@@ -20,13 +21,23 @@ import vn.thinher.quickjob.domain.RestResponse;
 public class GlobalException {
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
-            BadCredentialsException.class
+            BadCredentialsException.class,
+            IdInvalidException.class
     })
     public ResponseEntity<RestResponse<Object>> handleException(Exception exception) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         restResponse.setError(exception.getMessage());
         restResponse.setMessage("Exception occurred.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
+    }
+
+    @ExceptionHandler(value = { NoResourceFoundException.class })
+    public ResponseEntity<RestResponse<Object>> handleNotFoundException(NoResourceFoundException exception) {
+        RestResponse<Object> restResponse = new RestResponse<>();
+        restResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+        restResponse.setError(exception.getMessage());
+        restResponse.setMessage("404 Not Found.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
     }
 
