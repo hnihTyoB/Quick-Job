@@ -2,6 +2,8 @@ package vn.thinher.quickjob.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,14 +12,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turkraft.springfilter.boot.Filter;
+
 import vn.thinher.quickjob.domain.User;
+import vn.thinher.quickjob.domain.dto.ResultPaginationDTO;
 import vn.thinher.quickjob.service.UserService;
+import vn.thinher.quickjob.util.annotation.ApiMessage;
 import vn.thinher.quickjob.util.error.IdInvalidException;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 
 @RestController
 public class UserController {
@@ -30,9 +35,14 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.handleFetchAllUsers());
+    @ApiMessage("Fetch all users")
+    public ResponseEntity<ResultPaginationDTO> getAllUsers(
+            @Filter Specification<User> specification,
+            Pageable pageable) {
+        ResultPaginationDTO result = this.userService.handleFetchAllUsers(specification, pageable);
+        return ResponseEntity.ok(result);
     }
+
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable("id") long id) {
         User user = userService.handleFetchUserById(id);
@@ -49,11 +59,13 @@ public class UserController {
         User createdUser = userService.handleCreateUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
+
     @PutMapping("/users")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         User existingUser = userService.handleUpdateUser(user);
         return ResponseEntity.ok(existingUser);
     }
+
     @DeleteMapping("/users/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
         if (id >= 1500) {
