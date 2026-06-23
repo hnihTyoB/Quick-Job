@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component("userDetailsService")
-public class UserDetailsCustom implements UserDetailsService{
+public class UserDetailsCustom implements UserDetailsService {
     private final UserService userService;
 
     public UserDetailsCustom(UserService userService) {
@@ -21,9 +21,10 @@ public class UserDetailsCustom implements UserDetailsService{
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         vn.thinher.quickjob.domain.User user = this.userService.handleFetchUserByEmail(username);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + username);
+            throw new UsernameNotFoundException("Username or password is incorrect");
         }
-        return new User(user.getEmail(), user.getPassword(), Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+        return new User(user.getEmail(), user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
     }
-    
+
 }
