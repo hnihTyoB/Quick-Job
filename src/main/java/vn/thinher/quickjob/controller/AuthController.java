@@ -9,6 +9,9 @@ import vn.thinher.quickjob.domain.dto.ResLoginDTO;
 import vn.thinher.quickjob.service.UserService;
 import vn.thinher.quickjob.util.SecurityUtil;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,6 +27,9 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
     private final UserService userService;
+
+    @Value("${thinher.jwt.refresh-token-in-seconds}")
+    private Long refreshTokenExpiration;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
             UserService userService) {
@@ -56,8 +62,16 @@ public class AuthController {
 
         // create refresh token
         String refreshToken = this.securityUtil.createRefreshToken(loginDTO.getUsername(), resLoginDTO);
+        this.userService.updateUserToken(loginDTO.getUsername(), refreshToken);
 
-        return ResponseEntity.ok().body(resLoginDTO);
+        // set cookie
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshTokenExpiration)
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(resLoginDTO);
     }
 
 }

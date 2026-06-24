@@ -115,4 +115,12 @@ public class UserService {
     public void handleDeleteUser(long id) {
         this.userRepository.deleteById(id);
     }
+
+    public void updateUserToken(String email, String token) {
+        User user = this.handleFetchUserByEmail(email);
+        if (user != null) {
+            user.setRefreshToken(token);
+            this.userRepository.save(user);
+        }
+    }
 }
