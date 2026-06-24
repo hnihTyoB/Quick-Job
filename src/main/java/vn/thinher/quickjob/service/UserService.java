@@ -123,4 +123,16 @@ public class UserService {
             this.userRepository.save(user);
         }
     }
+
+    public User getUserByRefreshTokenAndEmail(String refreshToken, String email) {
+        return this.userRepository.findByRefreshTokenAndEmail(refreshToken, email);
+    }
+
+    public void deleteUserToken(String refreshToken) {
+        User user = this.getUserByRefreshTokenAndEmail(refreshToken, null);
+        if (user != null) {
+            user.setRefreshToken(null);
+            this.userRepository.save(user);
+        }
+    }
 }

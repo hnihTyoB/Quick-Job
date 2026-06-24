@@ -9,6 +9,7 @@ import vn.thinher.quickjob.domain.dto.ResLoginDTO;
 import vn.thinher.quickjob.service.UserService;
 import vn.thinher.quickjob.util.SecurityUtil;
 import vn.thinher.quickjob.util.annotation.ApiMessage;
+import vn.thinher.quickjob.util.error.IdInvalidException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -64,7 +65,7 @@ public class AuthController {
         }
 
         // create token
-        String accessToken = this.securityUtil.createAccessToken(authentication, resLoginDTO.getUser());
+        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), resLoginDTO.getUser());
         resLoginDTO.setAccessToken(accessToken);
 
         // create refresh token
@@ -97,11 +98,60 @@ public class AuthController {
 
     @GetMapping("/auth/refresh")
     @ApiMessage("Get refresh token")
-    public ResponseEntity<String> getRefreshToken(
-            @CookieValue(name = "refreshToken") String refreshToken) {
+    public ResponseEntity<ResLoginDTO> getRefreshToken(
+            @CookieValue(name = "refreshToken") String refreshToken) throws IdInvalidException {
         // check valid refresh token
         Jwt decodedRefreshToken = this.securityUtil.checkValidRefreshToken(refreshToken);
         String email = decodedRefreshToken.getSubject();
-        return ResponseEntity.ok().body(email);
+        // check user by email + token
+        User user = this.userService.getUserByRefreshTokenAndEmail(refreshToken, email);
+        if (user == null) {
+            throw new IdInvalidException("Refresh token not found");
+        }
+        // issue new access token/set refresh token as cookie
+        ResLoginDTO resLoginDTO = new ResLoginDTO();
+        User newUser = this.userService.handleFetchUserByEmail(email);
+        if (newUser != null) {
+            ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
+            userLogin.setId(newUser.getId());
+            userLogin.setName(newUser.getName());
+            userLogin.setEmail(newUser.getEmail());
+            resLoginDTO.setUser(userLogin);
+        }
+
+        // create token
+        String accessToken = this.securityUtil.createAccessToken(email, resLoginDTO.getUser());
+        resLoginDTO.setAccessToken(accessToken);
+
+        // create refresh token
+        String newRefreshToken = this.securityUtil.createRefreshToken(email, resLoginDTO);
+        this.userService.updateUserToken(email, newRefreshToken);
+
+        // set cookie
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshTokenExpiration)
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(resLoginDTO);
     }
+
+    @PostMapping("/auth/logout")
+    @ApiMessage("Logout")
+    public ResponseEntity<Void> logout() throws IdInvalidException {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : null;
+        if (email.equals("")) {
+            throw new IdInvalidException("Access token not found");
+        }
+        this.userService.updateUserToken(email, null);
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).body(null);
+    }
+
 }
