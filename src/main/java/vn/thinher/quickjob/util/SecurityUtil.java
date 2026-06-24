@@ -38,7 +38,7 @@ public class SecurityUtil {
     @Value("${thinher.jwt.refresh-token-in-seconds}")
     private long refreshTokenExpiration;
 
-    public String createAccessToken(Authentication authentication) {
+    public String createAccessToken(Authentication authentication, ResLoginDTO.UserLogin user) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
         // @formatter:off 
@@ -46,7 +46,7 @@ public class SecurityUtil {
             .issuedAt(now) 
             .expiresAt(validity) 
             .subject(authentication.getName()) 
-            .claim("thinher", authentication) 
+            .claim("user", user) 
             .build();
         
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build(); 

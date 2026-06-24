@@ -8,6 +8,7 @@ import vn.thinher.quickjob.domain.dto.LoginDTO;
 import vn.thinher.quickjob.domain.dto.ResLoginDTO;
 import vn.thinher.quickjob.service.UserService;
 import vn.thinher.quickjob.util.SecurityUtil;
+import vn.thinher.quickjob.util.annotation.ApiMessage;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -38,14 +41,13 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());
         // xác thực người dùng => cần viết hàm loadUserByUsername
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        // create token
-        String accessToken = this.securityUtil.createAccessToken(authentication);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         ResLoginDTO resLoginDTO = new ResLoginDTO();
@@ -58,6 +60,8 @@ public class AuthController {
             resLoginDTO.setUser(userLogin);
         }
 
+        // create token
+        String accessToken = this.securityUtil.createAccessToken(authentication, resLoginDTO.getUser());
         resLoginDTO.setAccessToken(accessToken);
 
         // create refresh token
@@ -72,6 +76,20 @@ public class AuthController {
                 .maxAge(refreshTokenExpiration)
                 .build();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(resLoginDTO);
+    }
+
+    @GetMapping("/auth/account")
+    @ApiMessage("Get account")
+    public ResponseEntity<ResLoginDTO.UserLogin> getAccount() {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : null;
+        User user = this.userService.handleFetchUserByEmail(email);
+        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
+        if (user != null) {
+            userLogin.setId(user.getId());
+            userLogin.setName(user.getName());
+            userLogin.setEmail(user.getEmail());
+        }
+        return ResponseEntity.ok().body(userLogin);
     }
 
 }
