@@ -2,6 +2,8 @@ package vn.thinher.quickjob.util;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -41,12 +43,19 @@ public class SecurityUtil {
     public String createAccessToken(Authentication authentication, ResLoginDTO.UserLogin user) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
+
+        // hardcoded permission
+        List<String> authorities = new ArrayList<String>();
+        authorities.add("ROLE_USER_CREATE");
+        authorities.add("ROLE_USER_UPDATE");
+
         // @formatter:off 
         JwtClaimsSet claims = JwtClaimsSet.builder() 
             .issuedAt(now) 
             .expiresAt(validity) 
             .subject(authentication.getName()) 
             .claim("user", user) 
+            .claim("permission", authorities) 
             .build();
         
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build(); 
