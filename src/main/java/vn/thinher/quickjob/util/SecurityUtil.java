@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.util.Base64;
 
-import vn.thinher.quickjob.domain.dto.ResLoginDTO;
+import vn.thinher.quickjob.domain.response.ResLoginDTO;
 
 @Service
 public class SecurityUtil {

@@ -9,11 +9,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.thinher.quickjob.domain.User;
-import vn.thinher.quickjob.domain.dto.Meta;
-import vn.thinher.quickjob.domain.dto.ResCreateUserDTO;
-import vn.thinher.quickjob.domain.dto.ResGetUserDTO;
-import vn.thinher.quickjob.domain.dto.ResUpdateUserDTO;
-import vn.thinher.quickjob.domain.dto.ResultPaginationDTO;
+import vn.thinher.quickjob.domain.response.ResCreateUserDTO;
+import vn.thinher.quickjob.domain.response.ResGetUserDTO;
+import vn.thinher.quickjob.domain.response.ResUpdateUserDTO;
+import vn.thinher.quickjob.domain.response.ResultPaginationDTO;
 import vn.thinher.quickjob.repository.UserRepository;
 
 @Service
@@ -26,7 +25,7 @@ public class UserService {
 
     public ResultPaginationDTO handleFetchAllUsers(Specification<User> specification, Pageable pageable) {
         Page<User> userPage = this.userRepository.findAll(specification, pageable);
-        Meta meta = new Meta();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
         meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
         meta.setPages(userPage.getTotalPages());

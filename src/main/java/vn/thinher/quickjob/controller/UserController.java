@@ -17,9 +17,9 @@ import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 import vn.thinher.quickjob.domain.User;
-import vn.thinher.quickjob.domain.dto.ResCreateUserDTO;
-import vn.thinher.quickjob.domain.dto.ResGetUserDTO;
-import vn.thinher.quickjob.domain.dto.ResultPaginationDTO;
+import vn.thinher.quickjob.domain.response.ResCreateUserDTO;
+import vn.thinher.quickjob.domain.response.ResGetUserDTO;
+import vn.thinher.quickjob.domain.response.ResultPaginationDTO;
 import vn.thinher.quickjob.service.UserService;
 import vn.thinher.quickjob.util.annotation.ApiMessage;
 import vn.thinher.quickjob.util.error.IdInvalidException;

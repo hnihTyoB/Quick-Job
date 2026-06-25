@@ -1,8 +1,8 @@
-package vn.thinher.quickjob.domain.dto;
+package vn.thinher.quickjob.domain.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class LoginDTO {
+public class ReqLoginDTO {
     @NotBlank(message = "Username is required")
     private String username;
     @NotBlank(message = "Password is required")

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import vn.thinher.quickjob.domain.RestResponse;
+import vn.thinher.quickjob.domain.response.RestResponse;
 
 @RestControllerAdvice
 public class GlobalException {

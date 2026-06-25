@@ -7,8 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.thinher.quickjob.domain.Company;
-import vn.thinher.quickjob.domain.dto.Meta;
-import vn.thinher.quickjob.domain.dto.ResultPaginationDTO;
+import vn.thinher.quickjob.domain.response.ResultPaginationDTO;
 import vn.thinher.quickjob.repository.CompanyRepository;
 
 @Service
@@ -25,7 +24,7 @@ public class CompanyService {
 
     public ResultPaginationDTO handleFetchAllCompanies(Specification<Company> specification, Pageable pageable) {
         Page<Company> companyPage = this.companyRepository.findAll(specification, pageable);
-        Meta meta = new Meta();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
         meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
         meta.setPages(companyPage.getTotalPages());

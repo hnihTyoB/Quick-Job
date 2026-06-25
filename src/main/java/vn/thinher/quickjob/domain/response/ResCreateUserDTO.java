@@ -1,18 +1,14 @@
-package vn.thinher.quickjob.domain.dto;
+package vn.thinher.quickjob.domain.response;
 
 import java.time.Instant;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.thinher.quickjob.util.constant.GenderEnum;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class ResGetUserDTO {
+public class ResCreateUserDTO {
     private long id;
     private String name;
     private String email;
@@ -20,5 +16,4 @@ public class ResGetUserDTO {
     private GenderEnum gender;
     private String address;
     private Instant createdAt;
-    private Instant updatedAt;
 }

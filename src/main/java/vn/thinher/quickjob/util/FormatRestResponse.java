@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import jakarta.servlet.http.HttpServletResponse;
-import vn.thinher.quickjob.domain.RestResponse;
+import vn.thinher.quickjob.domain.response.RestResponse;
 import vn.thinher.quickjob.util.annotation.ApiMessage;
 
 // Format rest response sẽ chạy trước GlobalException, nên nó trả về mã lỗi 500 thay vì 400, vì vậy viết thêm RestResponse trong GlobalException.

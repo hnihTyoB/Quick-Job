@@ -1,4 +1,4 @@
-package vn.thinher.quickjob.domain.dto;
+package vn.thinher.quickjob.domain.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

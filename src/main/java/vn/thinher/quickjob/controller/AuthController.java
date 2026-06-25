@@ -4,8 +4,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.thinher.quickjob.domain.User;
-import vn.thinher.quickjob.domain.dto.LoginDTO;
-import vn.thinher.quickjob.domain.dto.ResLoginDTO;
+import vn.thinher.quickjob.domain.request.ReqLoginDTO;
+import vn.thinher.quickjob.domain.response.ResLoginDTO;
 import vn.thinher.quickjob.service.UserService;
 import vn.thinher.quickjob.util.SecurityUtil;
 import vn.thinher.quickjob.util.annotation.ApiMessage;
@@ -45,7 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody ReqLoginDTO loginDTO) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());
         // xác thực người dùng => cần viết hàm loadUserByUsername

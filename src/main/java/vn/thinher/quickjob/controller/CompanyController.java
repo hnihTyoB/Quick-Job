@@ -22,7 +22,7 @@ import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 import vn.thinher.quickjob.domain.Company;
-import vn.thinher.quickjob.domain.dto.ResultPaginationDTO;
+import vn.thinher.quickjob.domain.response.ResultPaginationDTO;
 import vn.thinher.quickjob.service.CompanyService;
 import vn.thinher.quickjob.util.annotation.ApiMessage;
 
