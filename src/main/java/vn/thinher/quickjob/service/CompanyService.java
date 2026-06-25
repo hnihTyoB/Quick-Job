@@ -1,5 +1,6 @@
 package vn.thinher.quickjob.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -7,15 +8,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.thinher.quickjob.domain.Company;
+import vn.thinher.quickjob.domain.User;
 import vn.thinher.quickjob.domain.response.ResultPaginationDTO;
 import vn.thinher.quickjob.repository.CompanyRepository;
+import vn.thinher.quickjob.repository.UserRepository;
 
 @Service
 public class CompanyService {
     private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
 
-    public CompanyService(CompanyRepository companyRepository) {
+    public CompanyService(CompanyRepository companyRepository, UserRepository userRepository) {
         this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
     }
 
     public Company handleCreateCompany(Company company) {
@@ -35,6 +40,10 @@ public class CompanyService {
         return result;
     }
 
+    public Optional<Company> handleFetchCompanyById(long id) {
+        return this.companyRepository.findById(id);
+    }
+
     public Company handleUpdateCompany(Company company) {
         Optional<Company> companyOptional = this.companyRepository.findById(company.getId());
         if (companyOptional.isPresent()) {
@@ -49,6 +58,11 @@ public class CompanyService {
     }
 
     public void handleDeleteCompany(long id) {
+        Optional<Company> companyOptional = this.companyRepository.findById(id);
+        if (companyOptional.isPresent()) {
+            List<User> users = this.userRepository.findByCompany(companyOptional.get());
+            this.userRepository.deleteAll(users);
+        }
         this.companyRepository.deleteById(id);
     }
 }

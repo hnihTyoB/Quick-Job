@@ -2,12 +2,14 @@ package vn.thinher.quickjob.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import vn.thinher.quickjob.domain.Company;
 import vn.thinher.quickjob.domain.User;
 import vn.thinher.quickjob.domain.response.ResCreateUserDTO;
 import vn.thinher.quickjob.domain.response.ResGetUserDTO;
@@ -18,9 +20,11 @@ import vn.thinher.quickjob.repository.UserRepository;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final CompanyService companyService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, CompanyService companyService) {
         this.userRepository = userRepository;
+        this.companyService = companyService;
     }
 
     public ResultPaginationDTO handleFetchAllUsers(Specification<User> specification, Pageable pageable) {
@@ -34,7 +38,18 @@ public class UserService {
         result.setMeta(meta);
 
         // Remove sensitive data
-        List<ResGetUserDTO> listUser = userPage.getContent().stream().map(this::convertToResGetUserDTO).toList();
+        List<ResGetUserDTO> listUser = userPage.getContent().stream().map(item -> new ResGetUserDTO(
+                item.getId(),
+                item.getName(),
+                item.getEmail(),
+                item.getAge(),
+                item.getGender(),
+                item.getAddress(),
+                item.getCreatedAt(),
+                item.getUpdatedAt(),
+                new ResGetUserDTO.CompanyUser(item.getCompany() != null ? item.getCompany().getId() : 0,
+                        item.getCompany() != null ? item.getCompany().getName() : null)))
+                .collect(Collectors.toList());
         result.setResult(listUser);
         return result;
     }
@@ -57,6 +72,12 @@ public class UserService {
         resGetUserDTO.setAddress(user.getAddress());
         resGetUserDTO.setCreatedAt(user.getCreatedAt());
         resGetUserDTO.setUpdatedAt(user.getUpdatedAt());
+        if (user.getCompany() != null) {
+            ResGetUserDTO.CompanyUser companyUser = new ResGetUserDTO.CompanyUser();
+            companyUser.setId(user.getCompany().getId());
+            companyUser.setName(user.getCompany().getName());
+            resGetUserDTO.setCompany(companyUser);
+        }
         return resGetUserDTO;
     }
 
@@ -81,10 +102,21 @@ public class UserService {
         resCreateUserDTO.setGender(user.getGender());
         resCreateUserDTO.setAddress(user.getAddress());
         resCreateUserDTO.setCreatedAt(user.getCreatedAt());
+
+        if (user.getCompany() != null) {
+            ResCreateUserDTO.CompanyUser companyUser = new ResCreateUserDTO.CompanyUser();
+            companyUser.setId(user.getCompany().getId());
+            companyUser.setName(user.getCompany().getName());
+            resCreateUserDTO.setCompany(companyUser);
+        }
         return resCreateUserDTO;
     }
 
     public User handleCreateUser(User user) {
+        if (user.getCompany() != null) {
+            Optional<Company> companyOptional = this.companyService.handleFetchCompanyById(user.getCompany().getId());
+            user.setCompany(companyOptional.isPresent() ? companyOptional.get() : null);
+        }
         return this.userRepository.save(user);
     }
 
@@ -95,6 +127,11 @@ public class UserService {
             existingUser.setAge(user.getAge());
             existingUser.setGender(user.getGender());
             existingUser.setAddress(user.getAddress());
+            if (user.getCompany() != null) {
+                Optional<Company> companyOptional = this.companyService
+                        .handleFetchCompanyById(user.getCompany().getId());
+                existingUser.setCompany(companyOptional.isPresent() ? companyOptional.get() : null);
+            }
             existingUser = this.userRepository.save(existingUser);
         }
         return existingUser;
